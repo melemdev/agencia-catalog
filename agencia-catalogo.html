@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgencIA — Catálogo de Serviços</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --bg2: #080d1a;
+    --surface: #0d1526;
+    --surface2: #111d35;
+    --border: rgba(0,210,255,0.12);
+    --cyan: #00d2ff;
+    --cyan-dim: rgba(0,210,255,0.15);
+    --cyan-glow: rgba(0,210,255,0.35);
+    --violet: #7b5ea7;
+    --violet-bright: #a87cff;
+    --green: #00ffb3;
+    --green-dim: rgba(0,255,179,0.12);
+    --text: #e8f0ff;
+    --muted: #6a7fa8;
+    --card-bg: rgba(13,21,38,0.85);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--cyan); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, opacity 0.2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed; width: 40px; height: 40px;
+    border: 1px solid var(--cyan-glow); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease, width 0.2s, height 0.2s;
+  }
+
+  /* Grid overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,210,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,210,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(5,8,16,0.75);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .logo span { color: var(--cyan); }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    text-decoration: none; color: var(--muted);
+    font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+
+  .nav-cta {
+    padding: 0.5rem 1.25rem;
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: none; transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: var(--cyan); color: var(--bg); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute; top: 20%; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,210,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    animation: pulse-glow 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.35rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--cyan-dim);
+    font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--cyan); margin-bottom: 2rem;
+    animation: fade-up 0.8s ease both;
+  }
+
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--cyan); border-radius: 50%;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 800; line-height: 0.95;
+    letter-spacing: -0.04em;
+    animation: fade-up 0.8s 0.1s ease both;
+  }
+
+  .hero h1 .line2 { color: var(--cyan); display: block; }
+
+  .hero-sub {
+    max-width: 560px; margin: 2rem auto 0;
+    color: var(--muted); font-size: 0.88rem; line-height: 1.8;
+    animation: fade-up 0.8s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 1rem; margin-top: 2.5rem; justify-content: center;
+    animation: fade-up 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    padding: 0.85rem 2rem;
+    background: var(--cyan); color: var(--bg);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; font-weight: 500;
+    transition: box-shadow 0.2s, transform 0.15s;
+    cursor: none;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px var(--cyan-glow);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    padding: 0.85rem 2rem;
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none;
+    transition: border-color 0.2s;
+    cursor: none;
+  }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  /* STATS */
+  .stats {
+    display: flex; justify-content: center; gap: 4rem;
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    position: relative; z-index: 1;
+    animation: fade-up 0.8s 0.4s ease both;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem; font-weight: 800;
+    color: var(--cyan); display: block;
+  }
+  .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.25rem; }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTION */
+  section { position: relative; z-index: 1; }
+
+  .section-header {
+    text-align: center;
+    padding: 5rem 2rem 3rem;
+  }
+
+  .section-tag {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--cyan); margin-bottom: 1rem; display: block;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .section-desc {
+    color: var(--muted); font-size: 0.85rem; line-height: 1.8;
+    max-width: 480px; margin: 1rem auto 0;
+  }
+
+  /* SERVICES GRID */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5px;
+    padding: 0 0 6rem;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .service-card {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+    backdrop-filter: blur(8px);
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent, var(--cyan)), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+
+  .service-card:hover { background: var(--surface2); }
+  .service-card:hover::before { opacity: 1; }
+
+  .service-card.violet { --accent: var(--violet-bright); }
+  .service-card.green { --accent: var(--green); }
+  .service-card.cyan { --accent: var(--cyan); }
+
+  .service-icon {
+    width: 48px; height: 48px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.5rem;
+    background: var(--surface);
+    position: relative;
+  }
+
+  .service-num {
+    position: absolute; top: -8px; right: -8px;
+    font-size: 0.6rem; font-family: 'DM Mono', monospace;
+    color: var(--muted); letter-spacing: 0.05em;
+    background: var(--bg); padding: 1px 4px;
+    border: 1px solid var(--border);
+  }
+
+  .service-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem; font-weight: 700;
+    margin-bottom: 0.75rem; letter-spacing: -0.02em;
+  }
+
+  .service-card p {
+    color: var(--muted); font-size: 0.8rem; line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-tags {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tag {
+    font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+  }
+
+  .service-link {
+    font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent, var(--cyan));
+    text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+    transition: gap 0.2s;
+  }
+  .service-link:hover { gap: 0.8rem; }
+
+  /* HOW IT WORKS */
+  .how {
+    padding: 6rem 4rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  .steps {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 2rem; margin-top: 3rem; position: relative;
+  }
+
+  .steps::before {
+    content: '';
+    position: absolute; top: 2rem; left: 12.5%; right: 12.5%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), var(--cyan-dim), var(--border), transparent);
+  }
+
+  .step { text-align: center; }
+
+  .step-dot {
+    width: 2rem; height: 2rem;
+    border: 1px solid var(--cyan);
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 0.7rem; color: var(--cyan);
+    font-family: 'DM Mono', monospace;
+    position: relative; z-index: 1;
+  }
+
+  .step h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .step p { color: var(--muted); font-size: 0.75rem; line-height: 1.7; }
+
+  /* PRICING */
+  .pricing {
+    padding: 2rem 4rem 6rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  .plans {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); margin-top: 3rem;
+  }
+
+  .plan {
+    background: var(--card-bg);
+    padding: 2.5rem; position: relative;
+    transition: background 0.2s;
+  }
+
+  .plan.featured {
+    background: var(--surface2);
+    border-left: 1px solid var(--cyan);
+    border-right: 1px solid var(--cyan);
+  }
+
+  .plan-badge {
+    position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    background: var(--cyan); color: var(--bg);
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 0.2rem 0.75rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .plan-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+
+  .plan-desc { font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+
+  .plan-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem; font-weight: 800;
+    color: var(--cyan); margin-bottom: 0.25rem;
+  }
+
+  .plan-price span { font-size: 0.85rem; color: var(--muted); font-weight: 400; }
+
+  .plan-features {
+    list-style: none; margin: 1.5rem 0 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;
+  }
+
+  .plan-features li {
+    font-size: 0.75rem; color: var(--muted); padding: 0.4rem 0;
+    display: flex; gap: 0.5rem; align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  .plan-features li::before { content: '→'; color: var(--cyan); flex-shrink: 0; }
+
+  .plan-cta {
+    display: block; text-align: center; padding: 0.75rem;
+    border: 1px solid var(--border); color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; transition: all 0.2s; cursor: none;
+  }
+
+  .plan.featured .plan-cta {
+    background: var(--cyan); color: var(--bg); border-color: var(--cyan);
+  }
+
+  .plan-cta:hover { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
+
+  /* CTA SECTION */
+  .cta-section {
+    padding: 6rem 4rem;
+    text-align: center; position: relative; overflow: hidden;
+    border-top: 1px solid var(--border);
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(0,210,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1.1; margin-bottom: 1rem; position: relative;
+  }
+
+  .cta-section p { color: var(--muted); font-size: 0.85rem; margin-bottom: 2.5rem; position: relative; }
+
+  .cta-section .btn-primary { position: relative; font-size: 0.85rem; }
+
+  /* FOOTER */
+  footer {
+    padding: 2rem 4rem;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg2);
+  }
+
+  footer .logo { font-size: 1rem; }
+
+  .footer-note { font-size: 0.68rem; color: var(--muted); }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .steps::before { display: none; }
+    .plans { grid-template-columns: 1fr; }
+    .how, .pricing { padding: 3rem 1.5rem; }
+    .stats { gap: 2rem; flex-wrap: wrap; }
+    .cta-section { padding: 4rem 1.5rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Agenc<span>IA</span></div>
+  <ul class="nav-links">
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#processo">Processo</a></li>
+    <li><a href="#planos">Planos</a></li>
+  </ul>
+  <a href="#contato" class="nav-cta">Falar com especialista</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">Consultoria & Desenvolvimento com IA</div>
+  <h1>
+    Automatize.<br>
+    <span class="line2">Escale com IA.</span>
+  </h1>
+  <p class="hero-sub">
+    Transformamos PMEs e startups com soluções de inteligência artificial sob medida — desde chatbots conversacionais até automação completa de processos.
+  </p>
+  <div class="hero-actions">
+    <a href="#servicos" class="btn-primary">Ver serviços</a>
+    <a href="#processo" class="btn-ghost">Como funciona</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats reveal">
+  <div class="stat">
+    <span class="stat-num">4×</span>
+    <span class="stat-label">mais produtividade</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">-60%</span>
+    <span class="stat-label">custo operacional</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">30d</span>
+    <span class="stat-label">tempo médio de entrega</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">100%</span>
+    <span class="stat-label">personalizado</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="servicos">
+  <div class="section-header reveal">
+    <span class="section-tag">// catálogo de serviços</span>
+    <h2 class="section-title">O que a AgencIA entrega</h2>
+    <p class="section-desc">Soluções de IA construídas do zero, integradas ao seu negócio, prontas para escalar.</p>
+  </div>
+
+  <div class="services-grid">
+
+    <div class="service-card cyan reveal">
+      <div class="service-icon">🤖<span class="service-num">01</span></div>
+      <h3>Chatbots & IA Conversacional</h3>
+      <p>Assistentes inteligentes que atendem, qualificam e convertem clientes 24/7 — via WhatsApp, site, Instagram ou qualquer canal.</p>
+      <div class="service-tags">
+        <span class="tag">WhatsApp</span>
+        <span class="tag">LLM</span>
+        <span class="tag">RAG</span>
+        <span class="tag">Multicanal</span>
+      </div>
+      <a href="#contato" class="service-link">Saiba mais →</a>
+    </div>
+
+    <div class="service-card violet reveal">
+      <div class="service-icon">⚙️<span class="service-num">02</span></div>
+      <h3>Automação de Processos (RPA + IA)</h3>
+      <p>Elimine tarefas repetitivas. Automatizamos fluxos de trabalho internos combinando RPA com modelos de linguagem para decisões inteligentes.</p>
+      <div class="service-tags">
+        <span class="tag">RPA</span>
+        <span class="tag">n8n</span>
+        <span class="tag">Make</span>
+        <span class="tag">Workflows</span>
+      </div>
+      <a href="#contato" class="service-link">Saiba mais →</a>
+    </div>
+
+    <div class="service-card green reveal">
+      <div class="service-icon">✍️<span class="service-num">03</span></div>
+      <h3>Geração de Conteúdo com IA</h3>
+      <p>Pipelines de produção de conteúdo escalável: posts, e-mails, relatórios, descrições de produtos e campanhas gerados com sua voz e identidade.</p>
+      <div class="service-tags">
+        <span class="tag">Copywriting IA</span>
+        <span class="tag">Automação</span>
+        <span class="tag">Brand Voice</span>
+      </div>
+      <a href="#contato" class="service-link">Saiba mais →</a>
+    </div>
+
+    <div class="service-card violet reveal">
+      <div class="service-icon">🔗<span class="service-num">04</span></div>
+      <h3>Integrações & APIs com IA</h3>
+      <p>Conectamos IA aos seus sistemas existentes — CRM, ERP, e-commerce, ERPs e plataformas SaaS — via APIs robustas e arquiteturas escaláveis.</p>
+      <div class="service-tags">
+        <span class="tag">REST API</span>
+        <span class="tag">Webhooks</span>
+        <span class="tag">CRM</span>
+        <span class="tag">E-commerce</span>
+      </div>
+      <a href="#contato" class="service-link">Saiba mais →</a>
+    </div>
+
+    <div class="service-card cyan reveal">
+      <div class="service-icon">🧠<span class="service-num">05</span></div>
+      <h3>Consultoria Estratégica em IA</h3>
+      <p>Diagnóstico completo do seu negócio para identificar onde a IA gera mais impacto. Roteiro de implementação claro, com ROI projetado.</p>
+      <div class="service-tags">
+        <span class="tag">Diagnóstico</span>
+        <span class="tag">Roadmap</span>
+        <span class="tag">ROI</span>
+      </div>
+      <a href="#contato" class="service-link">Saiba mais →</a>
+    </div>
+
+    <div class="service-card green reveal">
+      <div class="service-icon">🚀<span class="service-num">06</span></div>
+      <h3>Produtos de IA Sob Medida</h3>
+      <p>Desenvolvemos MVPs e produtos completos com IA embarcada — de ferramentas internas a SaaS voltados ao mercado, do zero à produção.</p>
+      <div class="service-tags">
+        <span class="tag">MVP</span>
+        <span class="tag">SaaS</span>
+        <span class="tag">Produto</span>
+        <span class="tag">Full-stack</span>
+      </div>
+      <a href="#contato" class="service-link">Saiba mais →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="processo">
+  <div class="section-header reveal">
+    <span class="section-tag">// como funciona</span>
+    <h2 class="section-title">Processo de trabalho</h2>
+    <p class="section-desc">Da descoberta ao deploy — um método estruturado para entregar resultado real, rápido.</p>
+  </div>
+
+  <div class="how">
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-dot">01</div>
+        <h4>Diagnóstico</h4>
+        <p>Entendemos seu negócio, processos e dores. Mapeamos oportunidades reais de IA.</p>
+      </div>
+      <div class="step">
+        <div class="step-dot">02</div>
+        <h4>Proposta</h4>
+        <p>Desenvolvemos um roadmap técnico com escopo, prazo e ROI estimado.</p>
+      </div>
+      <div class="step">
+        <div class="step-dot">03</div>
+        <h4>Desenvolvimento</h4>
+        <p>Construímos, testamos e iteramos com ciclos curtos e total transparência.</p>
+      </div>
+      <div class="step">
+        <div class="step-dot">04</div>
+        <h4>Deploy & Suporte</h4>
+        <p>Lançamos em produção e oferecemos suporte contínuo para evolução.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="planos">
+  <div class="section-header reveal">
+    <span class="section-tag">// planos</span>
+    <h2 class="section-title">Modelos de engajamento</h2>
+    <p class="section-desc">Escolha o formato que melhor se adapta ao momento do seu negócio.</p>
+  </div>
+
+  <div class="pricing">
+    <div class="plans reveal">
+
+      <div class="plan">
+        <div class="plan-name">Essencial</div>
+        <div class="plan-desc">Para quem quer dar o primeiro passo com IA sem grande investimento inicial.</div>
+        <div class="plan-price">Sob consulta <span></span></div>
+        <ul class="plan-features">
+          <li>1 solução de IA implementada</li>
+          <li>Diagnóstico inicial incluso</li>
+          <li>Integração com 1 canal/sistema</li>
+          <li>Suporte por 30 dias</li>
+          <li>Entrega em até 3 semanas</li>
+        </ul>
+        <a href="#contato" class="plan-cta">Solicitar proposta</a>
+      </div>
+
+      <div class="plan featured">
+        <div class="plan-badge">Mais popular</div>
+        <div class="plan-name">Crescimento</div>
+        <div class="plan-desc">Para PMEs e startups que querem automatizar múltiplos processos e escalar com IA.</div>
+        <div class="plan-price">Sob consulta <span></span></div>
+        <ul class="plan-features">
+          <li>Até 3 soluções de IA</li>
+          <li>Consultoria estratégica completa</li>
+          <li>Integrações ilimitadas</li>
+          <li>Suporte por 90 dias</li>
+          <li>Treinamento da equipe</li>
+          <li>Relatórios de performance</li>
+        </ul>
+        <a href="#contato" class="plan-cta">Solicitar proposta</a>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">Parceiro</div>
+        <div class="plan-desc">Para empresas que querem IA como vantagem competitiva contínua e suporte dedicado.</div>
+        <div class="plan-price">Retainer <span>mensal</span></div>
+        <ul class="plan-features">
+          <li>Soluções ilimitadas</li>
+          <li>Equipe dedicada</li>
+          <li>Desenvolvimento de produto próprio</li>
+          <li>Suporte prioritário 24/5</li>
+          <li>Revisão mensal de estratégia</li>
+          <li>SLA garantido</li>
+        </ul>
+        <a href="#contato" class="plan-cta">Solicitar proposta</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contato">
+  <h2 class="reveal">Pronto para<br><span style="color:var(--cyan)">automatizar seu negócio?</span></h2>
+  <p class="reveal">Fale com um especialista da AgencIA e receba um diagnóstico gratuito.</p>
+  <a href="mailto:contato@agencia.ai" class="btn-primary reveal">Entrar em contato →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Agenc<span style="color:var(--cyan)">IA</span></div>
+  <div class="footer-note">© 2025 AgencIA. Todos os direitos reservados.</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('ring');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    setTimeout(() => {
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    }, 60);
+  });
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.style.width = '60px'; ring.style.height = '60px';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '40px'; ring.style.height = '40px';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
